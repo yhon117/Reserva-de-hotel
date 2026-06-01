@@ -28,4 +28,6 @@ public class Usuario {
     @ToString.Exclude   // Evita recursión infinita en toString()
     @EqualsAndHashCode.Exclude
     private List<Reserva> reservas;
+
+
 }
