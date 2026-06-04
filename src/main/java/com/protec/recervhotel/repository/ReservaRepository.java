@@ -1,6 +1,6 @@
 package com.protec.recervhotel.repository;
 
-import com.protec.recervhotel.entitys.Reserva;
+import com.protec.recervhotel.entities.Reserva;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ReservaReposistory extends CrudRepository<Reserva,Long> {
+public interface ReservaRepository extends CrudRepository<Reserva,Long> {
 
     // ─────────────────────────────────────────────
     // % OCUPACIÓN DIARIA

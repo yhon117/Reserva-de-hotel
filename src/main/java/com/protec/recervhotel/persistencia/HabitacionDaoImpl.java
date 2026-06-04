@@ -1,16 +1,16 @@
 package com.protec.recervhotel.persistencia;
 
-import com.protec.recervhotel.emun.EstadoHab;
-import com.protec.recervhotel.emun.TipoHab;
-import com.protec.recervhotel.entitys.Habitacion;
+import com.protec.recervhotel.enums.EstadoHab;
+import com.protec.recervhotel.enums.TipoHab;
+import com.protec.recervhotel.entities.Habitacion;
 import com.protec.recervhotel.repository.HabitacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 public class HabitacionDaoImpl implements HabitacionDao{
 
     @Autowired

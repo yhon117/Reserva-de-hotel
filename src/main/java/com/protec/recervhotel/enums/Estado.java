@@ -1,4 +1,4 @@
-package com.protec.recervhotel.emun;
+package com.protec.recervhotel.enums;
 
 public enum Estado {
     PENDIENTE,

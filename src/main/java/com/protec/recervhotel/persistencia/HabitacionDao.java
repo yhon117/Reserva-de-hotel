@@ -1,8 +1,8 @@
 package com.protec.recervhotel.persistencia;
 
-import com.protec.recervhotel.emun.EstadoHab;
-import com.protec.recervhotel.emun.TipoHab;
-import com.protec.recervhotel.entitys.Habitacion;
+import com.protec.recervhotel.enums.EstadoHab;
+import com.protec.recervhotel.enums.TipoHab;
+import com.protec.recervhotel.entities.Habitacion;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

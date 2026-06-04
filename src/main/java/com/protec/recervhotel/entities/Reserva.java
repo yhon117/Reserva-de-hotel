@@ -1,7 +1,10 @@
-package com.protec.recervhotel.entitys;
+package com.protec.recervhotel.entities;
 
-import com.protec.recervhotel.emun.Estado;
+import com.protec.recervhotel.enums.Estado;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,15 +22,20 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDate fechaEntrada;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDate fechaSalida;
 
+    @NotNull
+    @Positive
     @Column(nullable = false)
     private Double total;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Estado estado;
@@ -35,14 +43,12 @@ public class Reserva {
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
-    // Relación: Muchas Reservas pertenecen a un Usuario (* -> 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Usuario usuario;
 
-    // Relación: Muchas Reservas pertenecen a una Habitacion (* -> 1)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habitacion_id", nullable = false)
     @ToString.Exclude

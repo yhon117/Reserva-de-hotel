@@ -1,0 +1,123 @@
+========================================
+BITÁCORA - Reserva de Hotel
+========================================
+
+Sesión: 2026-06-03
+========================================
+
+FASE 1: CORRECCIONES
+---------------------
+1. @Table(name = "usurio") -> "usuarios" en Usuario.java
+2. UniqueConstraint en email de Usuario
+3. Package entitys -> entities (renombrado)
+4. Package emun -> enums (renombrado)
+5. ReservaReposistory -> ReservaRepository (archivo + clase)
+6. Validaciones @NotBlank, @Email, @Min, @Positive, @NotNull en entidades
+7. @Component -> @Repository en UsuarioDaoImpl, HabitacionDaoImpl, ReservaDaoImpl
+8. Agregado findByEmail a UsuarioDao / UsuarioDaoImpl / UsuarioRepository
+9. Agregado habitacionesMasReservadas a ReservaDao / ReservaDaoImpl
+
+FASE 2: DTOs (com.protec.recervhotel.dto)
+-------------------------------------------
+- UsuarioDTO (id, nombre, email, telefono)
+- UsuarioRegistroDTO (nombre, email, password, telefono) con validaciones
+- UsuarioLoginDTO (email, password) con validaciones
+- HabitacionDTO (id, numero, piso, precioNoche, capacidad, tipo, estado)
+- HabitacionCreacionDTO (numero, piso, precioNoche, capacidad, tipo, estado) con validaciones
+- ReservaDTO (id, fechas, total, estado, usuarioId, habitacionId, nombres)
+- ReservaCreacionDTO (fechaEntrada, fechaSalida, usuarioId, habitacionId) con validaciones
+
+FASE 3: MAPPERS (com.protec.recervhotel.mappers)
+---------------------------------------------------
+- UsuarioMapper (toDto, toEntity, toListDto)
+- HabitacionMapper (toDto con enum->string, toEntity con string->enum, toListDto)
+- ReservaMapper (toDto con flat fields, toEntity ignorando relaciones, toListDto)
+
+FASE 4: SERVICES (com.protec.recervhotel.service)
+---------------------------------------------------
+- UsuarioService: registrar, login, obtenerPorId, listarTodos, eliminar
+- HabitacionService: crear, obtenerPorId, listarTodas, actualizar, eliminar,
+  buscarDisponiblesPorTipo, buscarDisponiblesPorPrecioMaximo, buscarDisponiblesPorCapacidad
+- ReservaService: crear (con validación de fechas y disponibilidad),
+  cancelar, obtenerPorId, listarTodas, listarPorHabitacion,
+  contarOcupadasEnFecha, ingresosPorMes, ocupacionAgrupadaPorMes,
+  tendenciaDesde, habitacionesMasReservadas
+
+FASE 5: EXCEPTION HANDLING (com.protec.recervhotel.exception)
+---------------------------------------------------------------
+- ResourceNotFoundException (HTTP 404)
+- BusinessException (HTTP 400)
+- GlobalExceptionHandler (@RestControllerAdvice) con manejo de
+  ResourceNotFound, Business, MethodArgumentNotValid, y Exception general
+
+POM:
+- Agregado lombok-mapstruct-binding 0.2.0
+- Configurado annotationProcessorPaths con orden correcto: Lombok -> binding -> MapStruct
+- Extraído mapstruct.version a properties
+
+FASE 6: REST CONTROLLERS (com.protec.recervhotel.controller)
+---------------------------------------------------------------
+- UsuarioController: POST /api/usuarios/registro, POST /api/usuarios/login,
+  GET /api/usuarios/{id}, GET /api/usuarios, DELETE /api/usuarios/{id}
+- HabitacionController: CRUD /api/habitaciones + disponibles por tipo/precio/capacidad
+- ReservaController: POST /api/reservas, PUT /api/reservas/{id}/cancelar,
+  GET por id/todas/porHabitacion + estadísticas (ocupadas, ingresos, tendencia, etc.)
+
+========================================
+ESTADO ACTUAL DEL PROYECTO:
+- BACKEND COMPLETO: Entities, Enums, Repositories, DAOs, DTOs,
+  Mappers (MapStruct), Services, Controllers, Exception Handling
+- PENDIENTE: Spring Security (autenticación), pruebas unitarias/integración
+========================================
+
+
+========================================
+Sesión: 2026-06-03 (continuación)
+========================================
+
+FASE 7: REVISIÓN Y PRUEBAS
+---------------------------
+- Revisados endpoints de los 3 controladores (Usuario, Habitación, Reserva)
+- Confirmada lógica de negocio en ReservaService.crear():
+  * Valida estado DISPONIBLE de la habitación
+  * Valida fechas (no anterior a hoy, salida > entrada)
+  * Valida solapamiento con reservas CONFIRMADA/PENDIENTE
+- Generados ejemplos JSON para Postman:
+  * 2 usuarios de prueba
+  * 3 reservas de prueba
+- Pendiente: usuario probará en Postman
+
+### USUARIO — `/api/usuarios`
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/usuarios/registro` | POST | Crea usuario. Valida campos obligatorios y formato email. HTTP 201. |
+| `/api/usuarios/login` | POST | Autentica por email+password. HTTP 200. |
+| `/api/usuarios/{id}` | GET | Busca usuario por ID. HTTP 404 si no existe. |
+| `/api/usuarios` | GET | Lista todos los usuarios. |
+| `/api/usuarios/{id}` | DELETE | Elimina usuario. HTTP 204. |
+
+### HABITACIÓN — `/api/habitaciones`
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/habitaciones` | POST | Crea habitación. HTTP 201. |
+| `/api/habitaciones/{id}` | GET | Obtiene habitación por ID. |
+| `/api/habitaciones` | GET | Lista todas. |
+| `/api/habitaciones/{id}` | PUT | Actualiza habitación. |
+| `/api/habitaciones/{id}` | DELETE | Elimina habitación. HTTP 204. |
+| `/api/habitaciones/disponibles?tipo=` | GET | Filtra disponibles por tipo (SIMPLE/DOBLE/SUITE). |
+| `/api/habitaciones/disponibles/precio?max=` | GET | Filtra disponibles por precio máximo. |
+| `/api/habitaciones/disponibles/capacidad?personas=` | GET | Filtra disponibles por capacidad. |
+
+### RESERVA — `/api/reservas`
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/api/reservas` | POST | Crea reserva. Valida: habitación DISPONIBLE, fechas válidas, sin solapamiento. Calcula total. HTTP 201. |
+| `/api/reservas/{id}/cancelar` | PUT | Cancela reserva. HTTP 200. |
+| `/api/reservas/{id}` | GET | Obtiene reserva por ID. |
+| `/api/reservas` | GET | Lista todas. Filtra por ?habitacionId=. |
+| `/api/reservas/estadisticas/ocupadas?fecha=` | GET | Cuenta ocupadas en fecha. |
+| `/api/reservas/estadisticas/ingresos-por-mes` | GET | Ingresos agrupados por mes. |
+| `/api/reservas/estadisticas/ocupacion-por-mes` | GET | Reservas agrupadas por mes. |
+| `/api/reservas/estadisticas/tendencia?desde=` | GET | Tendencia diaria desde fecha. |
+| `/api/reservas/estadisticas/habitaciones-mas-reservadas` | GET | Ranking de habitaciones más reservadas. |
+=========================================

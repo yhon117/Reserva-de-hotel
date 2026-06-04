@@ -1,15 +1,14 @@
 package com.protec.recervhotel.persistencia;
 
-import com.protec.recervhotel.entitys.Usuario;
+import com.protec.recervhotel.entities.Usuario;
 import com.protec.recervhotel.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 public class UsuarioDaoImpl implements UsuarioDao{
 
     @Autowired
@@ -25,6 +24,11 @@ public class UsuarioDaoImpl implements UsuarioDao{
     @Override
     public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Usuario> findByEmail(String email) {
+        return usuarioRepository.findByEmail(email);
     }
 
     @Override

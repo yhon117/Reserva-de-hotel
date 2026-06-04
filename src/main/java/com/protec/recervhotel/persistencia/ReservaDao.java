@@ -1,7 +1,7 @@
 package com.protec.recervhotel.persistencia;
 
-import com.protec.recervhotel.entitys.Habitacion;
-import com.protec.recervhotel.entitys.Reserva;
+import com.protec.recervhotel.entities.Habitacion;
+import com.protec.recervhotel.entities.Reserva;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
@@ -35,4 +35,5 @@ public interface ReservaDao {
 
     List<Reserva> findByHabitacionEnRango(Long habitacionId, LocalDate inicio, LocalDate fin);
 
+    List<Object[]> habitacionesMasReservadas();
 }
