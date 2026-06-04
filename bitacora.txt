@@ -120,4 +120,23 @@ FASE 7: REVISIÓN Y PRUEBAS
 | `/api/reservas/estadisticas/ocupacion-por-mes` | GET | Reservas agrupadas por mes. |
 | `/api/reservas/estadisticas/tendencia?desde=` | GET | Tendencia diaria desde fecha. |
 | `/api/reservas/estadisticas/habitaciones-mas-reservadas` | GET | Ranking de habitaciones más reservadas. |
+
+========================================
+Sesión: 2026-06-04
+========================================
+
+FASE 8: PANEL ADMINISTRADOR FRONTEND
+---------------------------------------
+- Creado panel SPA en src/main/resources/static/
+- index.html con login + sidebar + 5 secciones (Dashboard, Habitaciones, Usuarios, Reservas, Estadísticas)
+- css/style.css con diseño responsive, sidebar fijo, tablas, modales, badges
+- js/api.js: cliente HTTP para todos los endpoints del backend
+- js/auth.js: login/logout con sessionStorage
+- js/router.js: enrutamiento por hash (#/dashboard, #/habitaciones, etc.)
+- js/dashboard.js: tarjetas con totales (habitaciones, usuarios, reservas, ocupadas hoy)
+- js/habitaciones.js: CRUD completo (crear, editar, eliminar en modal)
+- js/usuarios.js: listado y eliminación de usuarios
+- js/reservas.js: listado, creación y cancelación de reservas
+- js/estadisticas.js: reportes (ocupadas, ingresos por mes, ocupación, tendencia, top habitaciones)
+- Acceso: http://localhost:8080
 =========================================
