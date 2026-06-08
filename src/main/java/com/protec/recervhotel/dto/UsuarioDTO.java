@@ -1,5 +1,6 @@
 package com.protec.recervhotel.dto;
 
+import com.protec.recervhotel.enums.Rol;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class UsuarioDTO {
     private String nombre;
     private String email;
     private String telefono;
+    private Rol rol;
 }

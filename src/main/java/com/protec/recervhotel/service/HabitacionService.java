@@ -8,20 +8,36 @@ import com.protec.recervhotel.exception.BusinessException;
 import com.protec.recervhotel.exception.ResourceNotFoundException;
 import com.protec.recervhotel.mappers.HabitacionMapper;
 import com.protec.recervhotel.persistencia.HabitacionDao;
+import com.protec.recervhotel.persistencia.ReservaDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class HabitacionService {
 
     private final HabitacionDao habitacionDao;
     private final HabitacionMapper habitacionMapper;
+    private final ReservaDao reservaDao;
 
-    public HabitacionService(HabitacionDao habitacionDao, HabitacionMapper habitacionMapper) {
+    public HabitacionService(HabitacionDao habitacionDao, HabitacionMapper habitacionMapper, ReservaDao reservaDao) {
         this.habitacionDao = habitacionDao;
         this.habitacionMapper = habitacionMapper;
+        this.reservaDao = reservaDao;
+    }
+
+    private Set<Long> ocupadasHoy() {
+        return new HashSet<>(reservaDao.findHabitacionesOcupadasEnFecha(LocalDate.now()));
+    }
+
+    private String estadoEfectivo(EstadoHab estadoBD, Long habitacionId, Set<Long> ocupadas) {
+        if (estadoBD == EstadoHab.MANTENIMIENTO) return EstadoHab.MANTENIMIENTO.name();
+        if (ocupadas.contains(habitacionId)) return "OCUPADA";
+        return EstadoHab.DISPONIBLE.name();
     }
 
     @Transactional
@@ -37,11 +53,24 @@ public class HabitacionService {
     public HabitacionDTO obtenerPorId(Long id) {
         var habitacion = habitacionDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Habitación", id));
-        return habitacionMapper.toDto(habitacion);
+        var dto = habitacionMapper.toDto(habitacion);
+        dto.setEstado(estadoEfectivo(habitacion.getEstado(), id, ocupadasHoy()));
+        return dto;
     }
 
     public List<HabitacionDTO> listarTodas() {
-        return habitacionMapper.toListDto(habitacionDao.findAll());
+        var habitaciones = habitacionDao.findAll();
+        var ocupadas = ocupadasHoy();
+        return habitacionMapper.toListDto(habitaciones).stream()
+                .peek(dto -> {
+                    var h = habitaciones.stream()
+                            .filter(hh -> hh.getId().equals(dto.getId()))
+                            .findFirst().orElse(null);
+                    if (h != null) {
+                        dto.setEstado(estadoEfectivo(h.getEstado(), dto.getId(), ocupadas));
+                    }
+                })
+                .toList();
     }
 
     @Transactional
@@ -77,14 +106,23 @@ public class HabitacionService {
         } catch (IllegalArgumentException e) {
             throw new BusinessException("Tipo de habitación inválido: " + tipo);
         }
-        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByTipo(tipoHab));
+        var ocupadas = ocupadasHoy();
+        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByTipo(tipoHab)).stream()
+                .filter(dto -> !ocupadas.contains(dto.getId()))
+                .toList();
     }
 
     public List<HabitacionDTO> buscarDisponiblesPorPrecioMaximo(Double precio) {
-        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByPrecioMaximo(precio));
+        var ocupadas = ocupadasHoy();
+        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByPrecioMaximo(precio)).stream()
+                .filter(dto -> !ocupadas.contains(dto.getId()))
+                .toList();
     }
 
     public List<HabitacionDTO> buscarDisponiblesPorCapacidad(Integer personas) {
-        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByCapacidad(personas));
+        var ocupadas = ocupadasHoy();
+        return habitacionMapper.toListDto(habitacionDao.findDisponiblesByCapacidad(personas)).stream()
+                .filter(dto -> !ocupadas.contains(dto.getId()))
+                .toList();
     }
 }

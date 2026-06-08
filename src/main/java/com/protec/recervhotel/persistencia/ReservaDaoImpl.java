@@ -87,4 +87,9 @@ public class ReservaDaoImpl implements ReservaDao{
     public List<Object[]> habitacionesMasReservadas() {
         return reservaRepository.habitacionesMasReservadas();
     }
+
+    @Override
+    public List<Long> findHabitacionesOcupadasEnFecha(LocalDate fecha) {
+        return reservaRepository.findHabitacionesOcupadasEnFecha(fecha);
+    }
 }

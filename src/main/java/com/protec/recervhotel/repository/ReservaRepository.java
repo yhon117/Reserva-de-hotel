@@ -103,6 +103,12 @@ public interface ReservaRepository extends CrudRepository<Reserva,Long> {
             """)
     List<Object[]> tendenciaDesde(@Param("desde") LocalDate desde);
 
+    // IDs de habitaciones ocupadas en una fecha específica
+    @Query("SELECT DISTINCT r.habitacion.id FROM Reserva r " +
+           "WHERE r.estado IN ('CONFIRMADA', 'PENDIENTE') " +
+           "AND :fecha BETWEEN r.fechaEntrada AND r.fechaSalida")
+    List<Long> findHabitacionesOcupadasEnFecha(@Param("fecha") LocalDate fecha);
+
     // Habitación más reservada
     @Query("""
             SELECT r.habitacion.id, r.habitacion.numero, COUNT(r)

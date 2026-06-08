@@ -140,3 +140,103 @@ FASE 8: PANEL ADMINISTRADOR FRONTEND
 - js/estadisticas.js: reportes (ocupadas, ingresos por mes, ocupación, tendencia, top habitaciones)
 - Acceso: http://localhost:8080
 =========================================
+
+=========================================
+Sesión: 2026-06-05
+=========================================
+
+FASE 9: ROLES + SEGURIDAD CON JWT
+--------------------------------------
+Backend:
+- Creado enum Rol (ADMIN, RECEPCIONISTA, USER)
+- Agregado campo `rol` a Usuario (entidad + BD)
+- Agregadas dependencias: spring-boot-starter-security, jjwt
+- Creado paquete security/:
+  * JwtTokenProvider: genera y valida tokens JWT
+  * JwtAuthenticationFilter: extrae token del header Authorization
+  * CustomUserDetailsService: carga usuario para Spring Security
+  * SecurityConfig: protege endpoints por rol, CORS, stateless, BCrypt
+- Actualizado UsuarioService: BCrypt para passwords, login devuelve token
+- Actualizado UsuarioController: loginResponseDTO con token, endpoint /{id}/rol
+- Protegidos endpoints con SecurityFilterChain + @PreAuthorize
+
+Frontend:
+- api.js: envía token JWT en header Authorization, maneja 401/403
+- auth.js: almacena token + usuario, getRol(), hasRol(), applyRoleVisibility()
+- router.js: oculta secciones según rol (Usuarios y Estadísticas solo ADMIN/RECEP)
+- habitaciones.js: botones crear/editar/eliminar solo ADMIN
+- usuarios.js: columna rol, botón eliminar solo ADMIN
+- reservas.js: USER puede crear reservas auto-asignadas sin ver listado
+- dashboard.js: USER solo ve tarjetas de habitaciones
+
+Matriz de permisos:
+| Endpoint | ADMIN | RECEP | USER |
+|---------|-------|-------|------|
+| Login/Registro | ✅ | ✅ | ✅ |
+| GET habitaciones | ✅ | ✅ | ✅ |
+| POST/PUT/DELETE hab | ✅ | ❌ | ❌ |
+| GET usuarios | ✅ | ✅ | ❌ |
+| DELETE usuarios | ✅ | ❌ | ❌ |
+| POST/PUT reservas | ✅ | ✅ | ✅ |
+| GET reservas | ✅ | ✅ | ❌ |
+| Estadísticas | ✅ | ✅ | ❌ |
+| Cambiar rol | ✅ | ❌ | ❌ |
+=========================================
+
+=========================================
+Sesión: 2026-06-05 (cont.)
+=========================================
+
+FASE 10: MIGRACIÓN A TEMPLATE SB ADMIN 2
+------------------------------------------
+- Aplicado template SB Admin 2 (Bootstrap 4, jQuery, FontAwesome, Chart.js, DataTables)
+- Migrado de SPA a páginas separadas con navegación tradicional
+- login.html: formulario conectado a nuestra API con JWT
+- register.html: formulario de registro conectado a API
+- dashboard.html: KPIs con cards SB Admin 2 + gráficos Chart.js (ingresos por línea, top habitaciones dona)
+- habitaciones.html: DataTable con búsqueda/paginación + modal CRUD (solo ADMIN botones)
+- usuarios.html: DataTable con columna rol + badge de color (solo ADMIN/RECEP ven, solo ADMIN elimina)
+- reservas.html: DataTable + modal crear reserva (USER auto-asignado)
+- estadisticas.html: 4 charts (ingresos bar, ocupación dona, tendencia línea, top habitaciones bar horizontal)
+- hotel-api.js: cliente HTTP basado en jQuery con JWT en header
+- hotel-auth.js: auth + roles + sidebar toggle + topbar user info
+- index.html: redirige a dashboard.html
+- SecurityConfig: permitir vendor/**, img/**, scss/**, *.html
+- Eliminado SPA anterior (style.css, router.js, etc.)
+=========================================
+
+=========================================
+Sesión: 2026-06-05 (cont.)
+=========================================
+
+FASE 11: CORRECCIÓN DE BUGS
+-----------------------------
+BUG 1 — Modal de reservas no abría:
+- Causa: $('#form-reserva-modal')[0].reset() en hotel-reservas.js:78
+  referenciaba un <form> inexistente
+- Fix: Envuelto campos del modal en <form id="form-reserva-modal"> en reservas.html
+
+BUG 2 — ADMIN no podía crear/editar usuarios:
+- Backend:
+  * Creado UsuarioActualizacionDTO (password opcional)
+  * UsuarioService: registrar() ahora forza Rol.USER (seguridad)
+  * UsuarioService: nuevo crearPorAdmin() que permite asignar rol
+  * UsuarioService: nuevo actualizar(id, dto) para editar datos
+  * UsuarioController: POST /api/usuarios (admin-only, crear con rol)
+  * UsuarioController: PUT /api/usuarios/{id} (admin-only, actualizar)
+- Frontend:
+  * api.js: agregados crearUsuario() y actualizarUsuario()
+  * usuarios.html: botón "Nuevo usuario" + modal (nombre, email,
+    password, teléfono, selector de rol)
+  * hotel-usuarios.js: funciones crear/editar/guardar, botón editar
+  * hotel-reservas.js: feedback de éxito al crear reserva (USER)
+
+BUG 3 — Tipo numero inconsistente en Habitación:
+- Fix: hotel-habitaciones.js: numero: String(...) en vez de parseInt()
+
+BUGS PENDIENTES (próxima sesión):
+- Bug 4: Verificar que admin pueda crear habitaciones (posiblemente
+  resuelto con fix de Bug 3, probar)
+- Bug 5: Botón "Nueva habitación" visible para USER — ocultar
+  por defecto con clase d-none en HTML y mostrar solo si ADMIN
+=========================================

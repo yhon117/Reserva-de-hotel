@@ -14,6 +14,7 @@ public interface UsuarioMapper {
     UsuarioDTO toDto(Usuario usuario);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
     @Mapping(target = "reservas", ignore = true)
     Usuario toEntity(UsuarioRegistroDTO dto);
 

@@ -36,4 +36,6 @@ public interface ReservaDao {
     List<Reserva> findByHabitacionEnRango(Long habitacionId, LocalDate inicio, LocalDate fin);
 
     List<Object[]> habitacionesMasReservadas();
+
+    List<Long> findHabitacionesOcupadasEnFecha(LocalDate fecha);
 }

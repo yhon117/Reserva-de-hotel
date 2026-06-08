@@ -6,6 +6,7 @@ import com.protec.recervhotel.service.ReservaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -32,11 +33,13 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.cancelar(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/{id}")
     public ResponseEntity<ReservaDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(reservaService.obtenerPorId(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping
     public ResponseEntity<List<ReservaDTO>> listar(
             @RequestParam(required = false) Long habitacionId) {
@@ -46,26 +49,31 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.listarTodas());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/estadisticas/ocupadas")
     public ResponseEntity<Long> contarOcupadasEnFecha(@RequestParam LocalDate fecha) {
         return ResponseEntity.ok(reservaService.contarOcupadasEnFecha(fecha));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/estadisticas/ingresos-por-mes")
     public ResponseEntity<List<Map<String, Object>>> ingresosPorMes() {
         return ResponseEntity.ok(reservaService.ingresosPorMes());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/estadisticas/ocupacion-por-mes")
     public ResponseEntity<List<Map<String, Object>>> ocupacionPorMes() {
         return ResponseEntity.ok(reservaService.ocupacionAgrupadaPorMes());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/estadisticas/tendencia")
     public ResponseEntity<List<Map<String, Object>>> tendencia(@RequestParam LocalDate desde) {
         return ResponseEntity.ok(reservaService.tendenciaDesde(desde));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/estadisticas/habitaciones-mas-reservadas")
     public ResponseEntity<List<Map<String, Object>>> habitacionesMasReservadas() {
         return ResponseEntity.ok(reservaService.habitacionesMasReservadas());
