@@ -240,3 +240,41 @@ BUGS PENDIENTES (próxima sesión):
 - Bug 5: Botón "Nueva habitación" visible para USER — ocultar
   por defecto con clase d-none en HTML y mostrar solo si ADMIN
 =========================================
+
+=========================================
+Sesión: 2026-06-08
+=========================================
+
+FASE 12: TESTS UNITARIOS/INTEGRACIÓN
+---------------------------------------
+- Agregada dependencia H2 para tests + application-test.properties
+- Creados 12 clases de test (109 tests):
+  * Repository (3): UsuarioRepositoryTest, HabitacionRepositoryTest,
+    ReservaRepositoryTest
+  * Service (3): UsuarioServiceTest, HabitacionServiceTest, ReservaServiceTest
+  * Controller (3): UsuarioControllerTest, HabitacionControllerTest,
+    ReservaControllerTest
+  * Security (2): JwtTokenProviderTest, JwtAuthenticationFilterTest
+  * Integration (1): RecervHotelFullFlowIntegrationTest
+- Todos compilan y pasan: BUILD SUCCESS (109 tests)
+
+BUG 4 — Modal crear habitación no funcionaba:
+- Causa: campos del modal no estaban envueltos en <form>
+- Fix: envueltos en <form id="form-habitacion-modal"> en habitaciones.html
+
+BUG 5 — Botón "Nueva habitación" visible para USER:
+- Fix: button con clase d-none en HTML
+- JS: admin check usa removeClass('d-none').addClass('d-sm-inline-block')
+
+FASE 13: ESTADO EFECTIVO DE HABITACIONES
+-------------------------------------------
+- Agregada query findHabitacionesOcupadasEnFecha(fecha) en ReservaRepository
+  que retorna IDs de habitaciones con reservas CONFIRMADA/PENDIENTE activas
+- HabitacionService ahora computa estado en tiempo real:
+  * MANTENIMIENTO → siempre MANTENIMIENTO
+  * Si tiene reserva activa hoy → OCUPADA (sin importar estado BD)
+  * Si no tiene reserva → DISPONIBLE
+- buscarDisponiblesPor*() excluye habitaciones con reserva activa
+- Fix: Repository Tests con @ActiveProfiles("test") para usar H2
+- Total: 113 tests, BUILD SUCCESS
+=========================================
