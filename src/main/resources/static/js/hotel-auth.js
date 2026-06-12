@@ -50,6 +50,8 @@ function applyRoleVisibility() {
 
   $('#sidebar-usuarios').toggle(isAdmin || isRecep);
   $('#sidebar-estadisticas').toggle(isAdmin || isRecep);
+  $('#sidebar-facturas').toggle(isAdmin || isRecep);
+  $('#sidebar-pagos').toggle(isAdmin || isRecep);
 }
 
 function setTopbarUser() {

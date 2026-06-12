@@ -42,6 +42,8 @@ class ReservaServiceTest {
     private HabitacionDao habitacionDao;
     @Mock
     private ReservaMapper reservaMapper;
+    @Mock
+    private FacturaService facturaService;
 
     @InjectMocks
     private ReservaService reservaService;
@@ -97,6 +99,7 @@ class ReservaServiceTest {
         assertNotNull(result);
         assertEquals(200.0, result.getTotal());
         verify(reservaDao).save(reserva);
+        verify(facturaService).generarFactura(reserva);
     }
 
     @Test

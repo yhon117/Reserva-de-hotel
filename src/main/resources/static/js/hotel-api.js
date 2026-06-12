@@ -79,4 +79,21 @@ const api = {
     return apiRequest('/reservas/estadisticas/tendencia' + (q ? '?' + q : ''));
   },
   topHabitaciones: function () { return apiRequest('/reservas/estadisticas/habitaciones-mas-reservadas'); },
+
+  // Pagos
+  getPagos: function (params) {
+    var q = params ? Object.keys(params).map(function (k) { return k + '=' + params[k]; }).join('&') : '';
+    return apiRequest('/pagos' + (q ? '?' + q : ''));
+  },
+  getPago: function (id) { return apiRequest('/pagos/' + id); },
+  crearPago: function (data) { return apiRequest('/pagos', { method: 'POST', body: data }); },
+
+  // Facturas
+  getFacturas: function () { return apiRequest('/facturas'); },
+  getFactura: function (id) { return apiRequest('/facturas/' + id); },
+  getFacturaPorReserva: function (reservaId) { return apiRequest('/facturas/por-reserva/' + reservaId); },
+  getFacturaPdfUrl: function (id) {
+    var token = getToken();
+    return API_BASE + '/facturas/' + id + '/pdf' + (token ? '?token=' + token : '');
+  },
 };

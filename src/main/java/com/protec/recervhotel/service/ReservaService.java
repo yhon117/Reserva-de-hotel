@@ -2,6 +2,7 @@ package com.protec.recervhotel.service;
 
 import com.protec.recervhotel.dto.ReservaCreacionDTO;
 import com.protec.recervhotel.dto.ReservaDTO;
+import com.protec.recervhotel.entities.Factura;
 import com.protec.recervhotel.entities.Habitacion;
 import com.protec.recervhotel.entities.Reserva;
 import com.protec.recervhotel.entities.Usuario;
@@ -28,13 +29,16 @@ public class ReservaService {
     private final UsuarioDao usuarioDao;
     private final HabitacionDao habitacionDao;
     private final ReservaMapper reservaMapper;
+    private final FacturaService facturaService;
 
     public ReservaService(ReservaDao reservaDao, UsuarioDao usuarioDao,
-                          HabitacionDao habitacionDao, ReservaMapper reservaMapper) {
+                          HabitacionDao habitacionDao, ReservaMapper reservaMapper,
+                          FacturaService facturaService) {
         this.reservaDao = reservaDao;
         this.usuarioDao = usuarioDao;
         this.habitacionDao = habitacionDao;
         this.reservaMapper = reservaMapper;
+        this.facturaService = facturaService;
     }
 
     @Transactional
@@ -72,6 +76,7 @@ public class ReservaService {
         reserva.setEstado(Estado.CONFIRMADA);
 
         reservaDao.save(reserva);
+        facturaService.generarFactura(reserva);
         return reservaMapper.toDto(reserva);
     }
 

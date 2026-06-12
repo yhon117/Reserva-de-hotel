@@ -21,7 +21,19 @@ $(document).ready(function () {
 
 function loadReservas() {
   api.getReservas().then(function (data) {
-    renderReservasTable(Array.isArray(data) ? data : []);
+    var reservas = Array.isArray(data) ? data : [];
+    var promises = reservas.map(function (r) {
+      return api.getFacturaPorReserva(r.id).then(function (f) {
+        r._factura = f;
+        return r;
+      }).catch(function () {
+        r._factura = null;
+        return r;
+      });
+    });
+    return Promise.all(promises);
+  }).then(function (reservasConFactura) {
+    renderReservasTable(reservasConFactura);
   }).catch(function (err) {
     alert('Error: ' + err.message);
   });
@@ -32,12 +44,27 @@ function getEstadoReservaBadge(estado) {
   return '<span class="badge badge-' + (map[estado] || 'secondary') + '">' + estado + '</span>';
 }
 
+function getEstadoPagoBadge(pagada) {
+  return pagada
+    ? '<span class="badge badge-success">Pagado</span>'
+    : '<span class="badge badge-warning">Pendiente</span>';
+}
+
 function renderReservasTable(data) {
   var rows = data.map(function (r) {
     var puedeCancelar = r.estado !== 'CANCELADA' && r.estado !== 'COMPLETADA';
     var acciones = puedeCancelar
       ? '<button class="btn btn-sm btn-warning btn-cancelar-res" data-id="' + r.id + '"><i class="fas fa-times"></i> Cancelar</button>'
       : '—';
+
+    var facturaInfo = r._factura
+      ? getEstadoPagoBadge(r._factura.pagada)
+      : '<span class="badge badge-secondary">—</span>';
+
+    var facturaLink = r._factura
+      ? '<a href="facturas.html" class="btn btn-sm btn-info"><i class="fas fa-file-invoice"></i></a>'
+      : '—';
+
     return [
       r.id,
       r.usuarioNombre || (r.usuario && r.usuario.nombre) || '—',
@@ -46,6 +73,8 @@ function renderReservasTable(data) {
       r.fechaSalida,
       '$' + (r.total || 0).toFixed(2),
       getEstadoReservaBadge(r.estado),
+      facturaInfo,
+      facturaLink,
       acciones
     ];
   });
@@ -60,7 +89,9 @@ function renderReservasTable(data) {
     columns: [
       { title: 'ID' }, { title: 'Usuario' }, { title: 'Habitación' },
       { title: 'Entrada' }, { title: 'Salida' }, { title: 'Total' },
-      { title: 'Estado' }, { title: 'Acciones', orderable: false }
+      { title: 'Estado' }, { title: 'Pago' },
+      { title: 'Factura', orderable: false },
+      { title: 'Acciones', orderable: false }
     ],
     language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
     order: [[0, 'desc']]
@@ -122,6 +153,7 @@ function cargarSelectUsuarios() {
 function guardarReserva() {
   var isUser = hasRol('USER');
   var usuarioId = isUser ? getLoggedUser().id : parseInt($('#res-usuario').val());
+  var metodoPago = $('#res-metodo-pago').val();
   var data = {
     usuarioId: usuarioId,
     habitacionId: parseInt($('#res-habitacion').val()),
@@ -134,10 +166,21 @@ function guardarReserva() {
     return;
   }
 
-  api.crearReserva(data).then(function () {
+  api.crearReserva(data).then(function (reserva) {
+    if (metodoPago) {
+      return api.crearPago({
+        reservaId: reserva.id,
+        monto: reserva.total,
+        metodoPago: metodoPago
+      }).then(function () {
+        return reserva;
+      });
+    }
+    return reserva;
+  }).then(function () {
     $('#modalReserva').modal('hide');
     if (isUser) {
-      alert('Reserva creada correctamente');
+      alert('Reserva creada correctamente' + (metodoPago ? ' y pago registrado.' : '. Puedes pagar después.'));
     } else {
       loadReservas();
     }

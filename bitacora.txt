@@ -278,3 +278,53 @@ FASE 13: ESTADO EFECTIVO DE HABITACIONES
 - Fix: Repository Tests con @ActiveProfiles("test") para usar H2
 - Total: 113 tests, BUILD SUCCESS
 =========================================
+
+=========================================
+Sesión: 2026-06-12
+=========================================
+
+FASE 14: SISTEMA DE PAGOS Y FACTURACIÓN
+-------------------------------------------
+Backend:
+- Nuevos enums: MetodoPago (EFECTIVO, TARJETA_CREDITO, TARJETA_DEBITO, TRANSFERENCIA),
+  EstadoPago (PENDIENTE, PAGADO, PARCIAL, REEMBOLSADO)
+- Nuevas entidades: Pago, Factura, FacturaItem (con tablas pagos, facturas, factura_items)
+- DTOs: PagoDTO, PagoCreacionDTO, FacturaDTO, FacturaResumenDTO, FacturaItemDTO
+- Mappers MapStruct: PagoMapper, FacturaMapper
+- Repository + DAO: PagoRepository/PagoDao, FacturaRepository/FacturaDao
+- PagoService: registrarPago (con cálculo de pagado/parcial), listar, obtener por ID
+- FacturaService: generarFactura automática al crear reserva (subtotal, IVA 19%, total,
+  items), listar, generar PDF con OpenPDF (logo hotel, datos huésped, items, IVA, total)
+- PagoController: POST /api/pagos, GET /api/pagos, GET /api/pagos?id=
+- FacturaController: GET /api/facturas, GET /api/facturas/{id},
+  GET /api/facturas/por-reserva/{id}, GET /api/facturas/{id}/pdf
+- SecurityConfig: rutas protegidas para ADMIN/RECEPCIONISTA
+- ReservaService.crear() ahora genera factura automáticamente
+- application.properties: factura.iva=19, datos del hotel
+
+Frontend:
+- reservas.html: columnas "Pago" (badge Pagado/Pendiente) y "Factura" (enlace),
+  campo "Método de pago" opcional en modal de nueva reserva
+- hotel-reservas.js: integración con facturas, pago automático si se selecciona método
+- facturas.html + hotel-facturas.js: DataTable con facturas, modal detalle,
+  botón descargar PDF
+- pagos.html + hotel-pagos.js: DataTable con historial, modal registrar pago manual
+- Sidebar actualizado en todas las páginas con links a Pagos y Facturas
+- hotel-auth.js: visibilidad por rol de nuevos ítems del sidebar
+- hotel-api.js: métodos crearPago, getPagos, getFacturas, getFacturaPdfUrl
+
+PDF Factura:
+- Encabezado: nombre hotel, dirección, teléfono, email
+- N° factura, fecha emisión
+- Datos huésped, datos reserva (habitación, fechas, noches)
+- Tabla items: descripción, cantidad, precio unitario, total
+- Subtotal, IVA 19%, Total
+- Estado: PAGADA / PENDIENTE DE PAGO
+
+Dependencias agregadas:
+- OpenPDF 2.0.3 (generación de PDF)
+
+Tests: +26 tests (PagoServiceTest: 8, FacturaServiceTest: 9,
+  PagoControllerTest: 5, FacturaControllerTest: 4)
+Total: 139 tests, BUILD SUCCESS
+=========================================
