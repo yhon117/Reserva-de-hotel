@@ -92,8 +92,14 @@ const api = {
   getFacturas: function () { return apiRequest('/facturas'); },
   getFactura: function (id) { return apiRequest('/facturas/' + id); },
   getFacturaPorReserva: function (reservaId) { return apiRequest('/facturas/por-reserva/' + reservaId); },
-  getFacturaPdfUrl: function (id) {
+  getFacturaPdfUrl: function (facturaId) {
     var token = getToken();
-    return API_BASE + '/facturas/' + id + '/pdf' + (token ? '?token=' + token : '');
+    return API_BASE + '/facturas/' + facturaId + '/pdf' + (token ? '?token=' + token : '');
   },
+
+  // Cliente
+  getMisReservas: function () { return apiRequest('/reservas/mias'); },
+  getMisFacturas: function () { return apiRequest('/facturas/mias'); },
+  crearReservaCliente: function (data) { return apiRequest('/reservas', { method: 'POST', body: data }); },
+  actualizarMiPerfil: function (data) { return apiRequest('/usuarios/mi-perfil', { method: 'PUT', body: data }); },
 };

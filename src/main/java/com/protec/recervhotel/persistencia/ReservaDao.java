@@ -31,6 +31,10 @@ public interface ReservaDao {
 
     List<Object[]> tendenciaDesde( LocalDate desde);
 
+    List<Reserva> findByUsuarioId(Long usuarioId);
+
+    List<Reserva> findVencidasSinCompletar(LocalDate hoy);
+
     List<Reserva> findByHabitacionId(Long habitacionId);
 
     List<Reserva> findByHabitacionEnRango(Long habitacionId, LocalDate inicio, LocalDate fin);

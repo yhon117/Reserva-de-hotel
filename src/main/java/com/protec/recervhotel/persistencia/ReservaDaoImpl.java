@@ -74,6 +74,16 @@ public class ReservaDaoImpl implements ReservaDao{
     }
 
     @Override
+    public List<Reserva> findByUsuarioId(Long usuarioId) {
+        return reservaRepository.findByUsuarioIdOrderByFechaEntradaDesc(usuarioId);
+    }
+
+    @Override
+    public List<Reserva> findVencidasSinCompletar(LocalDate hoy) {
+        return reservaRepository.findVencidasSinCompletar(hoy);
+    }
+
+    @Override
     public List<Reserva> findByHabitacionId(Long habitacionId) {
         return reservaRepository.findByHabitacionId(habitacionId);
     }

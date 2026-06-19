@@ -11,4 +11,5 @@ public interface FacturaDao {
     List<Factura> findAll();
     Optional<Factura> findByReservaId(Long reservaId);
     boolean existsByReservaId(Long reservaId);
+    List<Factura> findByUsuarioId(Long usuarioId);
 }

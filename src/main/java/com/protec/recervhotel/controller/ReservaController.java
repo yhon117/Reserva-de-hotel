@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -31,6 +32,11 @@ public class ReservaController {
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<ReservaDTO> cancelar(@PathVariable Long id) {
         return ResponseEntity.ok(reservaService.cancelar(id));
+    }
+
+    @GetMapping("/mias")
+    public ResponseEntity<List<ReservaDTO>> listarMias(Authentication auth) {
+        return ResponseEntity.ok(reservaService.listarPorEmailUsuario(auth.getName()));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")

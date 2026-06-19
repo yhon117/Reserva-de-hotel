@@ -9,9 +9,11 @@ import com.protec.recervhotel.dto.FacturaResumenDTO;
 import com.protec.recervhotel.entities.Factura;
 import com.protec.recervhotel.entities.FacturaItem;
 import com.protec.recervhotel.entities.Reserva;
+import com.protec.recervhotel.entities.Usuario;
 import com.protec.recervhotel.exception.ResourceNotFoundException;
 import com.protec.recervhotel.mappers.FacturaMapper;
 import com.protec.recervhotel.persistencia.FacturaDao;
+import com.protec.recervhotel.persistencia.UsuarioDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ public class FacturaService {
 
     private final FacturaDao facturaDao;
     private final FacturaMapper facturaMapper;
+    private final UsuarioDao usuarioDao;
 
     @Value("${factura.iva:19}")
     private int ivaPorcentaje;
@@ -45,9 +48,10 @@ public class FacturaService {
     @Value("${factura.hotel.email:}")
     private String hotelEmail;
 
-    public FacturaService(FacturaDao facturaDao, FacturaMapper facturaMapper) {
+    public FacturaService(FacturaDao facturaDao, FacturaMapper facturaMapper, UsuarioDao usuarioDao) {
         this.facturaDao = facturaDao;
         this.facturaMapper = facturaMapper;
+        this.usuarioDao = usuarioDao;
     }
 
     @Transactional
@@ -102,6 +106,12 @@ public class FacturaService {
 
     public List<FacturaResumenDTO> listarTodas() {
         return facturaMapper.toListResumenDto(facturaDao.findAll());
+    }
+
+    public List<FacturaResumenDTO> listarPorEmailUsuario(String email) {
+        Usuario usuario = usuarioDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", 0L));
+        return facturaMapper.toListResumenDto(facturaDao.findByUsuarioId(usuario.getId()));
     }
 
     public byte[] generarPdf(Long facturaId) {

@@ -7,13 +7,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/facturas")
-@PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
 public class FacturaController {
 
     private final FacturaService facturaService;
@@ -22,21 +22,30 @@ public class FacturaController {
         this.facturaService = facturaService;
     }
 
+    @GetMapping("/mias")
+    public ResponseEntity<List<FacturaResumenDTO>> listarMias(Authentication auth) {
+        return ResponseEntity.ok(facturaService.listarPorEmailUsuario(auth.getName()));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/{id}")
     public ResponseEntity<FacturaDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(facturaService.obtenerPorId(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/por-reserva/{reservaId}")
     public ResponseEntity<FacturaDTO> obtenerPorReserva(@PathVariable Long reservaId) {
         return ResponseEntity.ok(facturaService.obtenerPorReservaId(reservaId));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping
     public ResponseEntity<List<FacturaResumenDTO>> listarTodas() {
         return ResponseEntity.ok(facturaService.listarTodas());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generarPdf(@PathVariable Long id) {
         byte[] pdf = facturaService.generarPdf(id);

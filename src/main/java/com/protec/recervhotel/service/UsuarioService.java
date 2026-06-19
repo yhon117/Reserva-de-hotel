@@ -116,6 +116,24 @@ public class UsuarioService {
     }
 
     @Transactional
+    public UsuarioDTO actualizarMiPerfil(String email, UsuarioActualizacionDTO dto) {
+        Usuario usuario = usuarioDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", 0L));
+        if (!usuario.getEmail().equals(dto.getEmail())
+                && usuarioDao.findByEmail(dto.getEmail()).isPresent()) {
+            throw new BusinessException("El email ya está registrado");
+        }
+        usuario.setNombre(dto.getNombre());
+        usuario.setEmail(dto.getEmail());
+        usuario.setTelefono(dto.getTelefono());
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+        usuarioDao.save(usuario);
+        return usuarioMapper.toDto(usuario);
+    }
+
+    @Transactional
     public UsuarioDTO cambiarRol(Long id, Rol nuevoRol) {
         Usuario usuario = usuarioDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", id));

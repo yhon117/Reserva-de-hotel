@@ -47,10 +47,13 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                 .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("ADMIN")
+                .requestMatchers("/api/reservas/mias").authenticated()
                 .requestMatchers("/api/reservas/estadisticas/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                 .requestMatchers(HttpMethod.GET, "/api/pagos/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
                 .requestMatchers("/api/pagos/**").authenticated()
+                .requestMatchers("/api/facturas/mias").authenticated()
                 .requestMatchers("/api/facturas/**").hasAnyRole("ADMIN", "RECEPCIONISTA")
+                .requestMatchers("/api/usuarios/mi-perfil").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -65,6 +66,12 @@ public class UsuarioController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         usuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/mi-perfil")
+    public ResponseEntity<UsuarioDTO> actualizarMiPerfil(Authentication auth,
+                                                          @Valid @RequestBody UsuarioActualizacionDTO dto) {
+        return ResponseEntity.ok(usuarioService.actualizarMiPerfil(auth.getName(), dto));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

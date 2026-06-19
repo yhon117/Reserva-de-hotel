@@ -41,6 +41,11 @@ function requireAuth() {
     window.location.href = 'login.html';
     return null;
   }
+  var currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  if (user.rol === 'USER' && currentPath !== 'mis-reservas.html' && currentPath !== 'login.html' && currentPath !== 'register.html') {
+    window.location.href = 'mis-reservas.html';
+    return null;
+  }
   return user;
 }
 
@@ -76,10 +81,13 @@ function setActiveSidebar(page) {
 }
 
 $(document).ready(function () {
-  if (window.location.pathname.indexOf('login.html') === -1 &&
-      window.location.pathname.indexOf('register.html') === -1) {
-    if (requireAuth()) {
-      applyRoleVisibility();
+  var page = window.location.pathname.split('/').pop();
+  if (page !== 'login.html' && page !== 'register.html') {
+    var user = requireAuth();
+    if (user) {
+      if (page !== 'mis-reservas.html') {
+        applyRoleVisibility();
+      }
       setTopbarUser();
       setupLogout();
     }

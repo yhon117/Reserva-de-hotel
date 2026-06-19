@@ -7,6 +7,7 @@ import com.protec.recervhotel.enums.*;
 import com.protec.recervhotel.exception.ResourceNotFoundException;
 import com.protec.recervhotel.mappers.FacturaMapper;
 import com.protec.recervhotel.persistencia.FacturaDao;
+import com.protec.recervhotel.persistencia.UsuarioDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ class FacturaServiceTest {
     private FacturaDao facturaDao;
     @Mock
     private FacturaMapper facturaMapper;
+    @Mock
+    private UsuarioDao usuarioDao;
 
     @InjectMocks
     private FacturaService facturaService;

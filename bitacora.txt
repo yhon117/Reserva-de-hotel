@@ -328,3 +328,45 @@ Tests: +26 tests (PagoServiceTest: 8, FacturaServiceTest: 9,
   PagoControllerTest: 5, FacturaControllerTest: 4)
 Total: 139 tests, BUILD SUCCESS
 =========================================
+
+=========================================
+Sesión: 2026-06-18
+=========================================
+
+FASE 15: DASHBOARD CLIENTE + AUTO-COMPLETAR RESERVAS
+-------------------------------------------------------
+
+Panel Cliente (mis-reservas.html):
+- Nuevo endpoint GET /api/reservas/mias (solo USER)
+- Nuevo endpoint GET /api/facturas/mias (solo USER)
+- Nuevo endpoint PUT /api/usuarios/mi-perfil (USER edita sus datos)
+- Nuevo archivo mis-reservas.html con sidebar propio y 3 tabs:
+  * Mis Reservas (DataTable + cancelar + crear reserva)
+  * Mis Facturas (DataTable + descarga PDF)
+  * Mi Perfil (editar datos personales, nombre/email/tel/password)
+- hotel-auth.js: USER redirigido automáticamente a mis-reservas.html
+- login.html: redirección por rol al iniciar sesión
+- hotel-api.js: agregados getMisReservas(), getMisFacturas(),
+  crearReservaCliente(), actualizarMiPerfil()
+- Renombrado RecervHotel → Recerva Hotel en todo el frontend
+- Fix PDF 403: JwtAuthenticationFilter acepta token vía ?token=
+
+Auto-completar reservas vencidas:
+- @EnableScheduling en RecervHotelApplication
+- ReservaScheduler creado: ejecuta cada hora (cron "0 0 * * * *")
+- ReservaService.completarReservasVencidas(): busca CONFIRMADA con
+  fechaSalida < hoy, las pasa a COMPLETADA, crea Pago automático
+  y marca factura como pagada
+- Estado efectivo en tiempo real al leer reservas:
+  si fechaSalida < hoy, reporta COMPLETADA aunque la BD diga
+  CONFIRMADA (safety net entre ejecuciones del scheduler)
+
+PENDIENTE PRÓXIMA SESIÓN:
+---------------------------------------
+Bug: Pago automático usa reserva.getTotal() (sin IVA), pero la
+factura incluye IVA 19%. El monto es menor al total de factura,
+por lo que el pago queda como PARCIAL en vez de PAGADO.
+Fix necesario en ReservaService.completarReservasVencidas():
+  - Inyectar FacturaDao
+  - Usar facturaDao.findByReservaId().getTotal() como monto del pago
+=========================================

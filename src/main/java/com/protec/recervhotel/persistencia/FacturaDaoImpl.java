@@ -40,4 +40,9 @@ public class FacturaDaoImpl implements FacturaDao {
     public boolean existsByReservaId(Long reservaId) {
         return facturaRepository.existsByReservaId(reservaId);
     }
+
+    @Override
+    public List<Factura> findByUsuarioId(Long usuarioId) {
+        return facturaRepository.findByReservaUsuarioId(usuarioId);
+    }
 }

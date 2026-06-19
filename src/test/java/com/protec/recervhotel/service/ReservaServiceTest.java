@@ -15,6 +15,7 @@ import com.protec.recervhotel.mappers.ReservaMapper;
 import com.protec.recervhotel.persistencia.HabitacionDao;
 import com.protec.recervhotel.persistencia.ReservaDao;
 import com.protec.recervhotel.persistencia.UsuarioDao;
+import com.protec.recervhotel.dto.PagoCreacionDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +45,8 @@ class ReservaServiceTest {
     private ReservaMapper reservaMapper;
     @Mock
     private FacturaService facturaService;
+    @Mock
+    private PagoService pagoService;
 
     @InjectMocks
     private ReservaService reservaService;

@@ -1,5 +1,6 @@
 package com.protec.recervhotel.service;
 
+import com.protec.recervhotel.dto.PagoCreacionDTO;
 import com.protec.recervhotel.dto.ReservaCreacionDTO;
 import com.protec.recervhotel.dto.ReservaDTO;
 import com.protec.recervhotel.entities.Factura;
@@ -11,6 +12,7 @@ import com.protec.recervhotel.enums.EstadoHab;
 import com.protec.recervhotel.exception.BusinessException;
 import com.protec.recervhotel.exception.ResourceNotFoundException;
 import com.protec.recervhotel.mappers.ReservaMapper;
+import com.protec.recervhotel.persistencia.FacturaDao;
 import com.protec.recervhotel.persistencia.HabitacionDao;
 import com.protec.recervhotel.persistencia.ReservaDao;
 import com.protec.recervhotel.persistencia.UsuarioDao;
@@ -30,15 +32,20 @@ public class ReservaService {
     private final HabitacionDao habitacionDao;
     private final ReservaMapper reservaMapper;
     private final FacturaService facturaService;
+    private final PagoService pagoService;
+    private final FacturaDao facturaDao;
 
     public ReservaService(ReservaDao reservaDao, UsuarioDao usuarioDao,
                           HabitacionDao habitacionDao, ReservaMapper reservaMapper,
-                          FacturaService facturaService) {
+                          FacturaService facturaService, PagoService pagoService,
+                          FacturaDao facturaDao) {
         this.reservaDao = reservaDao;
         this.usuarioDao = usuarioDao;
         this.habitacionDao = habitacionDao;
         this.reservaMapper = reservaMapper;
         this.facturaService = facturaService;
+        this.pagoService = pagoService;
+        this.facturaDao = facturaDao;
     }
 
     @Transactional
@@ -92,14 +99,56 @@ public class ReservaService {
         return reservaMapper.toDto(reserva);
     }
 
+    @Transactional
+    public int completarReservasVencidas() {
+        List<Reserva> vencidas = reservaDao.findVencidasSinCompletar(LocalDate.now());
+        for (Reserva r : vencidas) {
+            r.setEstado(Estado.COMPLETADA);
+            reservaDao.save(r);
+            pagoService.registrarPago(PagoCreacionDTO.builder()
+                    .reservaId(r.getId())
+                    .monto(facturaDao.findByReservaId(r.getId()).get().getTotal())
+                    .metodoPago("EFECTIVO")
+                    .observaciones("Pago automático por vencimiento de reserva")
+                    .build());
+        }
+        return vencidas.size();
+    }
+
+    private ReservaDTO conEstadoEfectivo(Reserva reserva) {
+        ReservaDTO dto = reservaMapper.toDto(reserva);
+        if ("CONFIRMADA".equals(dto.getEstado())
+                && reserva.getFechaSalida().isBefore(LocalDate.now())) {
+            dto.setEstado("COMPLETADA");
+        }
+        return dto;
+    }
+
+    private List<ReservaDTO> conEstadoEfectivo(List<Reserva> reservas) {
+        List<ReservaDTO> dtos = reservaMapper.toListDto(reservas);
+        for (int i = 0; i < reservas.size(); i++) {
+            if ("CONFIRMADA".equals(dtos.get(i).getEstado())
+                    && reservas.get(i).getFechaSalida().isBefore(LocalDate.now())) {
+                dtos.get(i).setEstado("COMPLETADA");
+            }
+        }
+        return dtos;
+    }
+
     public ReservaDTO obtenerPorId(Long id) {
         Reserva reserva = reservaDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reserva", id));
-        return reservaMapper.toDto(reserva);
+        return conEstadoEfectivo(reserva);
     }
 
     public List<ReservaDTO> listarTodas() {
-        return reservaMapper.toListDto(reservaDao.findAll());
+        return conEstadoEfectivo(reservaDao.findAll());
+    }
+
+    public List<ReservaDTO> listarPorEmailUsuario(String email) {
+        Usuario usuario = usuarioDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario", 0L));
+        return conEstadoEfectivo(reservaDao.findByUsuarioId(usuario.getId()));
     }
 
     public List<ReservaDTO> listarPorHabitacion(Long habitacionId) {

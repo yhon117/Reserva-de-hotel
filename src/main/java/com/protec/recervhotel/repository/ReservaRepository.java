@@ -119,6 +119,11 @@ public interface ReservaRepository extends CrudRepository<Reserva,Long> {
             """)
     List<Object[]> habitacionesMasReservadas();
 
+    List<Reserva> findByUsuarioIdOrderByFechaEntradaDesc(Long usuarioId);
+
+    @Query("SELECT r FROM Reserva r WHERE r.estado = 'CONFIRMADA' AND r.fechaSalida < :hoy")
+    List<Reserva> findVencidasSinCompletar(@Param("hoy") LocalDate hoy);
+
     // ─────────────────────────────────────────────
     // HISTORIAL POR HABITACIÓN ESPECÍFICA
     // ─────────────────────────────────────────────

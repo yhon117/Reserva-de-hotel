@@ -1,7 +1,9 @@
 package com.protec.recervhotel.repository;
 
 import com.protec.recervhotel.entities.Factura;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,4 +13,7 @@ public interface FacturaRepository extends CrudRepository<Factura, Long> {
     List<Factura> findAllByOrderByFechaEmisionDesc();
     Optional<Factura> findByNumeroFactura(String numeroFactura);
     boolean existsByReservaId(Long reservaId);
+
+    @Query("SELECT f FROM Factura f WHERE f.reserva.usuario.id = :usuarioId ORDER BY f.fechaEmision DESC")
+    List<Factura> findByReservaUsuarioId(@Param("usuarioId") Long usuarioId);
 }
