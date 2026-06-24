@@ -166,13 +166,14 @@ Authorization: Bearer <token>
 **POST /api/usuarios/login**
 
 ```json
-// Request
 {
   "email": "admin@recervhotel.com",
   "password": "admin123"
 }
+```
 
-// Response 200 OK
+**Response 200 OK**
+```json
 {
   "token": "eyJhbGciOiJIUzI1NiJ9...",
   "id": 1,
@@ -186,15 +187,16 @@ Authorization: Bearer <token>
 **POST /api/usuarios/registro**
 
 ```json
-// Request
 {
   "nombre": "Juan Pérez",
   "email": "juan@email.com",
   "password": "123456",
   "telefono": "999111222"
 }
+```
 
-// Response 201 Created
+**Response 201 Created**
+```json
 {
   "id": 2,
   "nombre": "Juan Pérez",
@@ -218,8 +220,8 @@ Authorization: Bearer <token>
 
 **GET /api/usuarios**
 
+**Response 200**
 ```json
-// Response 200
 [
   {
     "id": 1,
@@ -234,7 +236,6 @@ Authorization: Bearer <token>
 **POST /api/usuarios** (ADMIN)
 
 ```json
-// Request
 {
   "nombre": "Nuevo Recepcionista",
   "email": "recepcion2@recervhotel.com",
@@ -242,8 +243,10 @@ Authorization: Bearer <token>
   "telefono": "999444555",
   "rol": "RECEPCIONISTA"
 }
+```
 
-// Response 201
+**Response 201**
+```json
 {
   "id": 5,
   "nombre": "Nuevo Recepcionista",
@@ -256,15 +259,16 @@ Authorization: Bearer <token>
 **PUT /api/usuarios/mi-perfil**
 
 ```json
-// Request
 {
   "nombre": "Juan Pérez Actualizado",
   "email": "juan@email.com",
   "password": "nueva123",
   "telefono": "999111333"
 }
+```
 
-// Response 200
+**Response 200**
+```json
 {
   "id": 2,
   "nombre": "Juan Pérez Actualizado",
@@ -290,7 +294,6 @@ Authorization: Bearer <token>
 **POST /api/habitaciones** (ADMIN)
 
 ```json
-// Request
 {
   "numero": "101",
   "piso": 1,
@@ -299,8 +302,10 @@ Authorization: Bearer <token>
   "tipo": "DOBLE",
   "estado": "DISPONIBLE"
 }
+```
 
-// Response 201
+**Response 201**
+```json
 {
   "id": 1,
   "numero": "101",
@@ -314,8 +319,8 @@ Authorization: Bearer <token>
 
 **GET /api/habitaciones/disponibles/precio?max=150**
 
+**Response 200**
 ```json
-// Response 200
 [
   {
     "id": 1,
@@ -342,15 +347,16 @@ Authorization: Bearer <token>
 **POST /api/reservas**
 
 ```json
-// Request
 {
   "fechaEntrada": "2026-07-01",
   "fechaSalida": "2026-07-05",
   "usuarioId": 2,
   "habitacionId": 1
 }
+```
 
-// Response 201
+**Response 201**
+```json
 {
   "id": 1,
   "fechaEntrada": "2026-07-01",
@@ -367,8 +373,8 @@ Authorization: Bearer <token>
 
 **PUT /api/reservas/{id}/cancelar** (ADMIN / RECEPCIONISTA)
 
+**Response 200**
 ```json
-// Response 200
 {
   "id": 1,
   "estado": "CANCELADA",
@@ -382,8 +388,8 @@ Authorization: Bearer <token>
 
 **GET /api/reservas/mias**
 
+**Response 200**
 ```json
-// Response 200
 [
   {
     "id": 1,
@@ -411,15 +417,16 @@ Authorization: Bearer <token>
 **POST /api/pagos** (ADMIN / RECEPCIONISTA)
 
 ```json
-// Request
 {
   "reservaId": 1,
   "monto": 480.00,
   "metodoPago": "TARJETA_CREDITO",
   "observaciones": "Pago completo"
 }
+```
 
-// Response 201
+**Response 201**
+```json
 {
   "id": 1,
   "reservaId": 1,
@@ -446,8 +453,8 @@ Authorization: Bearer <token>
 
 **GET /api/facturas/{id}**
 
+**Response 200**
 ```json
-// Response 200
 {
   "id": 1,
   "numeroFactura": "FAC-2024-0001",
