@@ -160,7 +160,9 @@ $(document).ready(function () {
   });
 
   $('#btn-guardar-reserva-cliente').on('click', function () {
+    var user = getLoggedUser();
     var data = {
+      usuarioId: user ? user.id : null,
       habitacionId: parseInt($('#res-cli-habitacion').val()),
       fechaEntrada: $('#res-cli-fecha-entrada').val(),
       fechaSalida: $('#res-cli-fecha-salida').val(),

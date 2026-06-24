@@ -21,6 +21,7 @@ public class PagoController {
         this.pagoService = pagoService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @PostMapping
     public ResponseEntity<PagoDTO> registrar(@Valid @RequestBody PagoCreacionDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pagoService.registrarPago(dto));

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,13 +30,16 @@ public class ReservaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.crear(dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<ReservaDTO> cancelar(@PathVariable Long id) {
         return ResponseEntity.ok(reservaService.cancelar(id));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/mias")
-    public ResponseEntity<List<ReservaDTO>> listarMias(Authentication auth) {
+    public ResponseEntity<List<ReservaDTO>> listarMias() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(reservaService.listarPorEmailUsuario(auth.getName()));
     }
 

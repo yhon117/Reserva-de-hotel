@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,8 +23,10 @@ public class FacturaController {
         this.facturaService = facturaService;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/mias")
-    public ResponseEntity<List<FacturaResumenDTO>> listarMias(Authentication auth) {
+    public ResponseEntity<List<FacturaResumenDTO>> listarMias() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(facturaService.listarPorEmailUsuario(auth.getName()));
     }
 
@@ -45,7 +48,6 @@ public class FacturaController {
         return ResponseEntity.ok(facturaService.listarTodas());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPCIONISTA')")
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> generarPdf(@PathVariable Long id) {
         byte[] pdf = facturaService.generarPdf(id);

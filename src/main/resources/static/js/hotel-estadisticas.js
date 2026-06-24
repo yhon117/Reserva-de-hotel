@@ -57,6 +57,9 @@ function cargarIngresosPorMes() {
         scales: { y: { beginAtZero: true, ticks: { callback: function (v) { return '$' + v; } } } }
       }
     });
+  }).catch(function (err) {
+    console.error('Error al cargar ingresos por mes', err);
+    alert('Error al cargar ingresos por mes');
   });
 }
 
@@ -78,6 +81,9 @@ function cargarOcupacionPorMes() {
       },
       options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
     });
+  }).catch(function (err) {
+    console.error('Error al cargar ocupación por mes', err);
+    alert('Error al cargar ocupación por mes');
   });
 }
 
@@ -105,6 +111,9 @@ function cargarTopHabitaciones() {
         scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
+  }).catch(function (err) {
+    console.error('Error al cargar top habitaciones', err);
+    alert('Error al cargar top habitaciones');
   });
 }
 
@@ -136,5 +145,8 @@ function cargarTendencia() {
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
+  }).catch(function (err) {
+    console.error('Error al cargar tendencia', err);
+    alert('Error al cargar tendencia');
   });
 }

@@ -104,7 +104,9 @@ public class UsuarioService {
         }
         usuario.setNombre(dto.getNombre());
         usuario.setEmail(dto.getEmail());
-        usuario.setTelefono(dto.getTelefono());
+        if (dto.getTelefono() != null) {
+            usuario.setTelefono(dto.getTelefono());
+        }
         if (dto.getRol() != null) {
             usuario.setRol(dto.getRol());
         }
@@ -118,14 +120,16 @@ public class UsuarioService {
     @Transactional
     public UsuarioDTO actualizarMiPerfil(String email, UsuarioActualizacionDTO dto) {
         Usuario usuario = usuarioDao.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario", 0L));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
         if (!usuario.getEmail().equals(dto.getEmail())
                 && usuarioDao.findByEmail(dto.getEmail()).isPresent()) {
             throw new BusinessException("El email ya está registrado");
         }
         usuario.setNombre(dto.getNombre());
         usuario.setEmail(dto.getEmail());
-        usuario.setTelefono(dto.getTelefono());
+        if (dto.getTelefono() != null) {
+            usuario.setTelefono(dto.getTelefono());
+        }
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
         }

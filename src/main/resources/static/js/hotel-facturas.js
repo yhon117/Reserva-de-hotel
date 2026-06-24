@@ -51,7 +51,7 @@ function renderFacturasTable(data) {
       { title: 'Fecha Emisión' }, { title: 'Acciones', orderable: false }
     ],
     language: { url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
-    order: [[0, 'desc']]
+    order: [[6, 'desc']]
   });
 
   $('#dataTable tbody').on('click', '.btn-ver-factura', function () {

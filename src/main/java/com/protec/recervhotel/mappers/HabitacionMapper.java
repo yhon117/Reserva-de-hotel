@@ -17,8 +17,8 @@ public interface HabitacionMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "reservas", ignore = true)
-    @Mapping(target = "tipo", expression = "java(com.protec.recervhotel.enums.TipoHab.valueOf(dto.getTipo()))")
-    @Mapping(target = "estado", expression = "java(com.protec.recervhotel.enums.EstadoHab.valueOf(dto.getEstado()))")
+    @Mapping(target = "tipo", expression = "java(com.protec.recervhotel.enums.TipoHab.valueOf(dto.getTipo().toUpperCase()))")
+    @Mapping(target = "estado", expression = "java(com.protec.recervhotel.enums.EstadoHab.valueOf(dto.getEstado().toUpperCase()))")
     Habitacion toEntity(HabitacionCreacionDTO dto);
 
     List<HabitacionDTO> toListDto(List<Habitacion> habitaciones);

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -68,9 +69,10 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/mi-perfil")
-    public ResponseEntity<UsuarioDTO> actualizarMiPerfil(Authentication auth,
-                                                          @Valid @RequestBody UsuarioActualizacionDTO dto) {
+    public ResponseEntity<UsuarioDTO> actualizarMiPerfil(@Valid @RequestBody UsuarioActualizacionDTO dto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok(usuarioService.actualizarMiPerfil(auth.getName(), dto));
     }
 

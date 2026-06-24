@@ -19,9 +19,13 @@ public class ReservaScheduler {
 
     @Scheduled(cron = "0 0 * * * *")
     public void completarReservasVencidas() {
-        int count = reservaService.completarReservasVencidas();
-        if (count > 0) {
-            log.info("Reservas auto-completadas: {}", count);
+        try {
+            int count = reservaService.completarReservasVencidas();
+            if (count > 0) {
+                log.info("Reservas auto-completadas: {}", count);
+            }
+        } catch (Exception e) {
+            log.error("Error al completar reservas vencidas", e);
         }
     }
 }

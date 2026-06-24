@@ -107,7 +107,7 @@ public class ReservaService {
             reservaDao.save(r);
             pagoService.registrarPago(PagoCreacionDTO.builder()
                     .reservaId(r.getId())
-                    .monto(facturaDao.findByReservaId(r.getId()).get().getTotal())
+                    .monto(facturaDao.findByReservaId(r.getId()).map(Factura::getTotal).orElse(r.getTotal()))
                     .metodoPago("EFECTIVO")
                     .observaciones("Pago automático por vencimiento de reserva")
                     .build());
@@ -155,7 +155,7 @@ public class ReservaService {
         if (habitacionDao.findById(habitacionId).isEmpty()) {
             throw new ResourceNotFoundException("Habitación", habitacionId);
         }
-        return reservaMapper.toListDto(reservaDao.findByHabitacionId(habitacionId));
+        return conEstadoEfectivo(reservaDao.findByHabitacionId(habitacionId));
     }
 
     public Long contarOcupadasEnFecha(LocalDate fecha) {

@@ -80,7 +80,6 @@ const api = {
   },
   topHabitaciones: function () { return apiRequest('/reservas/estadisticas/habitaciones-mas-reservadas'); },
 
-  // Pagos
   getPagos: function (params) {
     var q = params ? Object.keys(params).map(function (k) { return k + '=' + params[k]; }).join('&') : '';
     return apiRequest('/pagos' + (q ? '?' + q : ''));
@@ -88,7 +87,6 @@ const api = {
   getPago: function (id) { return apiRequest('/pagos/' + id); },
   crearPago: function (data) { return apiRequest('/pagos', { method: 'POST', body: data }); },
 
-  // Facturas
   getFacturas: function () { return apiRequest('/facturas'); },
   getFactura: function (id) { return apiRequest('/facturas/' + id); },
   getFacturaPorReserva: function (reservaId) { return apiRequest('/facturas/por-reserva/' + reservaId); },
@@ -97,7 +95,6 @@ const api = {
     return API_BASE + '/facturas/' + facturaId + '/pdf' + (token ? '?token=' + token : '');
   },
 
-  // Cliente
   getMisReservas: function () { return apiRequest('/reservas/mias'); },
   getMisFacturas: function () { return apiRequest('/facturas/mias'); },
   crearReservaCliente: function (data) { return apiRequest('/reservas', { method: 'POST', body: data }); },

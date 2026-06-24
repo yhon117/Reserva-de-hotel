@@ -152,7 +152,16 @@ function cargarSelectUsuarios() {
 
 function guardarReserva() {
   var isUser = hasRol('USER');
-  var usuarioId = isUser ? getLoggedUser().id : parseInt($('#res-usuario').val());
+  var usuarioId;
+  if (isUser) {
+    usuarioId = getLoggedUser().id;
+  } else {
+    usuarioId = parseInt($('#res-usuario').val());
+    if (isNaN(usuarioId)) {
+      alert('Seleccione un usuario');
+      return;
+    }
+  }
   var metodoPago = $('#res-metodo-pago').val();
   var data = {
     usuarioId: usuarioId,

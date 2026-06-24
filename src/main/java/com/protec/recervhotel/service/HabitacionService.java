@@ -2,6 +2,7 @@ package com.protec.recervhotel.service;
 
 import com.protec.recervhotel.dto.HabitacionCreacionDTO;
 import com.protec.recervhotel.dto.HabitacionDTO;
+import com.protec.recervhotel.entities.Habitacion;
 import com.protec.recervhotel.enums.EstadoHab;
 import com.protec.recervhotel.enums.TipoHab;
 import com.protec.recervhotel.exception.BusinessException;
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -61,11 +64,13 @@ public class HabitacionService {
     public List<HabitacionDTO> listarTodas() {
         var habitaciones = habitacionDao.findAll();
         var ocupadas = ocupadasHoy();
+        Map<Long, Habitacion> mapa = new HashMap<>();
+        for (var h : habitaciones) {
+            mapa.put(h.getId(), h);
+        }
         return habitacionMapper.toListDto(habitaciones).stream()
                 .peek(dto -> {
-                    var h = habitaciones.stream()
-                            .filter(hh -> hh.getId().equals(dto.getId()))
-                            .findFirst().orElse(null);
+                    var h = mapa.get(dto.getId());
                     if (h != null) {
                         dto.setEstado(estadoEfectivo(h.getEstado(), dto.getId(), ocupadas));
                     }
@@ -85,8 +90,12 @@ public class HabitacionService {
         habitacion.setPiso(dto.getPiso());
         habitacion.setPrecioNoche(dto.getPrecioNoche());
         habitacion.setCapacidad(dto.getCapacidad());
-        habitacion.setTipo(TipoHab.valueOf(dto.getTipo()));
-        habitacion.setEstado(EstadoHab.valueOf(dto.getEstado()));
+        try {
+            habitacion.setTipo(TipoHab.valueOf(dto.getTipo().toUpperCase()));
+            habitacion.setEstado(EstadoHab.valueOf(dto.getEstado().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException("Tipo o estado de habitación inválido");
+        }
         habitacionDao.save(habitacion);
         return habitacionMapper.toDto(habitacion);
     }
