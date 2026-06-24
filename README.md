@@ -34,6 +34,66 @@ Sistema de gestión hotelera con autenticación JWT, administración de habitaci
 | Maven | 3.9+ |
 | SB Admin 2 | Bootstrap 5 |
 
+
+
+
+
+## 🖥 Vistas Web
+
+| Página | Ruta | Descripción |
+|---|---|---|
+| `login.html` | `/login.html` | Inicio de sesión |
+| `dashboard.html` | `/dashboard.html` | Panel principal con estadísticas |
+| `usuarios.html` | `/usuarios.html` | Gestión de usuarios |
+| `habitaciones.html` | `/habitaciones.html` | Gestión de habitaciones |
+| `reservas.html` | `/reservas.html` | Gestión de reservas |
+| `mis-reservas.html` | `/mis-reservas.html` | Reservas del huésped |
+| `pagos.html` | `/pagos.html` | Registro de pagos |
+| `facturas.html` | `/facturas.html` | Facturación |
+| `estadisticas.html` | `/estadisticas.html` | Estadísticas y gráficos |
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+reserva-hotel/
+├── pom.xml
+├── mvnw / mvnw.cmd
+├── bitacora.txt
+├── src/
+│   └── main/
+│       ├── java/com/protec/recervhotel/
+│       │   ├── RecervHotelApplication.java
+│       │   ├── controller/    → 5 controladores REST
+│       │   ├── service/       → 5 servicios
+│       │   ├── repository/    → 5 repositorios JPA
+│       │   ├── persistencia/  → DAOs (6 clases)
+│       │   ├── entities/      → 6 entidades
+│       │   ├── dto/           → 15 DTOs
+│       │   ├── mappers/       → 5 mappers MapStruct
+│       │   ├── enums/         → 6 enums
+│       │   ├── security/      → 4 clases (JWT, filter, config, UserDetails)
+│       │   ├── exception/     → 3 clases (handler, excepciones)
+│       │   └── scheduler/     → 1 clase (tarea programada)
+│       └── resources/
+│           ├── application.properties
+│           └── static/        → SB Admin 2 (HTML, JS, CSS, vendor)
+└── target/                    → compilado
+```
+
+---
+
+## 🧪 Notas Técnicas
+
+- **Spring Boot 4.0.6** con Java 26 — requiere JDK 26+
+- **Spring Security 6.x** con `@EnableMethodSecurity` y `@PreAuthorize`
+- **JWT** con llave HMAC-SHA256 (256 bits), expiración configurable (por defecto 24h)
+- **MapStruct + Lombok** trabajan juntos mediante `lombok-mapstruct-binding`
+- **OpenPDF 2.0.3** genera facturas en PDF con datos de la reserva
+- **Scheduler** (`@EnableScheduling`) ejecuta cada hora `0 0 * * * *` para finalizar reservas cuya fecha de salida ya pasó
+- **CORS** habilitado para desarrollo local
+
 ---
 
 ## 🏗 Arquitectura
@@ -497,58 +557,3 @@ Authorization: Bearer <token>
 
 ---
 
-## 🖥 Vistas Web
-
-| Página | Ruta | Descripción |
-|---|---|---|
-| `login.html` | `/login.html` | Inicio de sesión |
-| `dashboard.html` | `/dashboard.html` | Panel principal con estadísticas |
-| `usuarios.html` | `/usuarios.html` | Gestión de usuarios |
-| `habitaciones.html` | `/habitaciones.html` | Gestión de habitaciones |
-| `reservas.html` | `/reservas.html` | Gestión de reservas |
-| `mis-reservas.html` | `/mis-reservas.html` | Reservas del huésped |
-| `pagos.html` | `/pagos.html` | Registro de pagos |
-| `facturas.html` | `/facturas.html` | Facturación |
-| `estadisticas.html` | `/estadisticas.html` | Estadísticas y gráficos |
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-reserva-hotel/
-├── pom.xml
-├── mvnw / mvnw.cmd
-├── bitacora.txt
-├── src/
-│   └── main/
-│       ├── java/com/protec/recervhotel/
-│       │   ├── RecervHotelApplication.java
-│       │   ├── controller/    → 5 controladores REST
-│       │   ├── service/       → 5 servicios
-│       │   ├── repository/    → 5 repositorios JPA
-│       │   ├── persistencia/  → DAOs (6 clases)
-│       │   ├── entities/      → 6 entidades
-│       │   ├── dto/           → 15 DTOs
-│       │   ├── mappers/       → 5 mappers MapStruct
-│       │   ├── enums/         → 6 enums
-│       │   ├── security/      → 4 clases (JWT, filter, config, UserDetails)
-│       │   ├── exception/     → 3 clases (handler, excepciones)
-│       │   └── scheduler/     → 1 clase (tarea programada)
-│       └── resources/
-│           ├── application.properties
-│           └── static/        → SB Admin 2 (HTML, JS, CSS, vendor)
-└── target/                    → compilado
-```
-
----
-
-## 🧪 Notas Técnicas
-
-- **Spring Boot 4.0.6** con Java 26 — requiere JDK 26+
-- **Spring Security 6.x** con `@EnableMethodSecurity` y `@PreAuthorize`
-- **JWT** con llave HMAC-SHA256 (256 bits), expiración configurable (por defecto 24h)
-- **MapStruct + Lombok** trabajan juntos mediante `lombok-mapstruct-binding`
-- **OpenPDF 2.0.3** genera facturas en PDF con datos de la reserva
-- **Scheduler** (`@EnableScheduling`) ejecuta cada hora `0 0 * * * *` para finalizar reservas cuya fecha de salida ya pasó
-- **CORS** habilitado para desarrollo local
